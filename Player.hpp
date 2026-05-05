@@ -1,6 +1,6 @@
-#if define "PLAYER.HPP"
-#import Matchmaking.cpp
-#endif define
+#ifndef PLAYER.HPP
+#define PLAYER.HPP
+#include <string>
 
 class Player {
 
@@ -21,3 +21,5 @@ public:
     int getScore();
     int getTimestamp();
 };
+
+#endif 

@@ -1,6 +1,7 @@
-#if define "MATCHMAKING.HPP"
-#import Player.cpp
-#endif define
+#ifndef MATCHMAKING.HPP
+#define MATCHMAKING.HPP
+
+#include "Player.hpp"
 
 const int MAX_PLAYERS = 100000;
 
@@ -30,3 +31,5 @@ public:
 
     // Outros métodos auxiliares, se necessário
 };
+
+#endif
