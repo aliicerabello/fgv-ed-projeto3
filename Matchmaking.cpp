@@ -38,22 +38,18 @@ bool Matchmaking::removePlayer(int id_){
     size--; return true;
 }
 
-bool Matchmaking::shouldComeFirst(Player p1, Player p2){
-    if (p1.getScore() > p2.getScore()){
+bool Matchmaking::comesBefore(Player p1, Player p2){
+    if (p1.getScore() > p2.getScore())
         return false;
-    }
 
-    if (p1.getScore() < p2.getScore()){
+    if (p1.getScore() < p2.getScore())
         return true;
-    }
 
-    if (p1.getTimestamp() < p2.getTimestamp()){
+    if (p1.getTimestamp() < p2.getTimestamp())
         return true;
-    }
 
     return false;
 }
-
 
 void Matchmaking::sortByScoreInsertion(){
     for (int i = 1; i < size; i++){
@@ -61,18 +57,66 @@ void Matchmaking::sortByScoreInsertion(){
         int j = i - 1;
 
 
-        while (j >= 0 && shouldComeFirst(key, players[j])){
+        while (j >= 0 && comesBefore(key, players[j])){
             players[j + 1] = players[j];
             j--;
         }
 
         players[j + 1] = key;
+    }
+}
 
+void Matchmaking::mergeSort(Player players_[MAX_PLAYERS], int first, int middle, int last){
+    int i = first;
+    int k = first;
+    int j = middle +1;
+    
+    Player* aux_players = new Player[MAX_PLAYERS];
+    
+    while(i <= middle && j <= last){
+        if(comesBefore(players_[i], players_[j])){
+            aux_players[k] = players_[i];
+            i++;
         }
+        else{
+            aux_players[k] = players_[j];
+            j++;
+        }
+        k++;
     }
 
+    while (i <= middle){
+        aux_players[k] = players_[i];
+        i++; k++;
+    }
+
+    while (j <= last){
+        aux_players[k] = players_[j];
+        j++; k++;
+    }
+
+    for(int n = first; n <= last; n++)
+        players_[n] = aux_players[n];
+
+    delete[] aux_players;
+}
+
+void Matchmaking::divideMerge(Player players_[MAX_PLAYERS], int first, int last){
+    if(first >= last)
+        return;
+        
+    int middle = (first + last)/2;
+    divideMerge(players_, first, middle);
+    divideMerge(players_, middle+1, last);
+
+    mergeSort(players_, first, middle, last);
+}
+
 void Matchmaking::sortByScoreMerge(){
-    
+    if(size <= 1)
+        return; 
+
+    divideMerge(players, 0, size-1);    
 }
 
 Player* Matchmaking::formGroup(int groupSize, int delta, int* n){
@@ -166,5 +210,4 @@ void Matchmaking::printWaitingPlayers(){
              << players[i].getTimestamp()
              << "]" << endl;
     }
-
 }
