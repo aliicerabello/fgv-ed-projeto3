@@ -1,28 +1,86 @@
-#include <iostream>
 #include "Matchmaking.hpp"
 #include "Player.hpp"
+#include <iostream>
 
 using namespace std;
 
 int main() {
-    Matchmaking mm;
+    Matchmaking matchmaking;
 
-    // Criando jogadores
-    Player p1(1, "Alice", 150, 10);
-    Player p2(2, "Bob", 100, 20);
-    Player p3(3, "Carol", 200, 30);
-    Player p4(4, "Dave", 120, 40);
-    Player p5(5, "Eve", 180, 50);
+    cout << "=== Teste 1: insercao ===" << endl;
+    matchmaking.insert(Player(1, "Ana", 1000, 1));
+    matchmaking.insert(Player(2, "Bruno", 1010, 2));
+    matchmaking.insert(Player(3, "Carla", 1020, 3));
+    matchmaking.insert(Player(4, "Diego", 1100, 4));
+    matchmaking.printWaitingPlayers();
 
-    // Inserindo
-    mm.insert(p1);
-    mm.insert(p2);
-    mm.insert(p3);
-    mm.insert(p4);
-    mm.insert(p5);
+    cout << endl;
 
-    cout << "Sorted Players (por score):\n";
-    //mm.printSorted();
+    cout << "=== Teste 2: getWaitingPlayers ===" << endl;
+    int n;
+    Player* waiting = matchmaking.getWaitingPlayers(&n);
+
+    cout << "n = " << n << endl;
+    for (int i = 0; i < n; i++) {
+        cout << "["
+             << waiting[i].getId() << " | "
+             << waiting[i].getName() << " | "
+             << waiting[i].getScore() << " | "
+             << waiting[i].getTimestamp()
+             << "]" << endl;
+    }
+
+    delete[] waiting;
+
+    cout << endl;
+
+    cout << "=== Teste 3: formGroup com sucesso ===" << endl;
+    Player* group = matchmaking.formGroup(3, 30, &n);
+
+    matchmaking.printGroup(group, n);
+    cout << "n = " << n << endl;
+
+    delete[] group;
+
+    cout << endl;
+
+    cout << "Estado apos formar grupo:" << endl;
+    matchmaking.printWaitingPlayers();
+
+    cout << endl;
+
+    cout << "=== Teste 4: removePlayer ===" << endl;
+    bool removed = matchmaking.removePlayer(4);
+    cout << "removePlayer(4): " << removed << endl;
+    matchmaking.printWaitingPlayers();
+
+    cout << endl;
+
+    cout << "=== Teste 5: tentativa de remover ID inexistente ===" << endl;
+    removed = matchmaking.removePlayer(99);
+    cout << "removePlayer(99): " << removed << endl;
+    matchmaking.printWaitingPlayers();
+
+    cout << endl;
+
+    cout << "=== Teste 6: formGroup sem sucesso ===" << endl;
+    matchmaking.insert(Player(5, "Eduarda", 1000, 5));
+    matchmaking.insert(Player(6, "Felipe", 1200, 6));
+    matchmaking.insert(Player(7, "Giulia", 1400, 7));
+
+    matchmaking.printWaitingPlayers();
+
+    group = matchmaking.formGroup(3, 50, &n);
+
+    matchmaking.printGroup(group, n);
+    cout << "n = " << n << endl;
+
+    delete[] group;
+
+    cout << endl;
+
+    cout << "Estado final:" << endl;
+    matchmaking.printWaitingPlayers();
 
     return 0;
 }

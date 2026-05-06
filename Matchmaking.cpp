@@ -85,6 +85,23 @@ Player* Matchmaking::formGroup(int groupSize, int delta, int* n){
 
 }
 
+void Matchmaking::printGroup(Player* group, int n) {
+    if (group == nullptr) {
+        cout << "Group: nullptr" << endl;
+        return;
+    }
+
+    cout << "Group:" << endl;
+    for (int i = 0; i < n; i++) {
+        cout << "["
+             << group[i].getId() << " | "
+             << group[i].getName() << " | "
+             << group[i].getScore() << " | "
+             << group[i].getTimestamp()
+             << "]" << endl;
+    }
+}
+
 
 Player* Matchmaking::getWaitingPlayers(int* n){
     if (size == 0){
@@ -104,8 +121,20 @@ Player* Matchmaking::getWaitingPlayers(int* n){
 
 
 void Matchmaking::printWaitingPlayers(){
-    cout << "Waiting Player" << endl;
+    cout << "Waiting Players:" << endl;
+
     if (size == 0){
         cout << "(empty)" << endl;
+        return;
     }
+
+    for (int i = 0; i < size; i++){
+        cout << "["
+             << players[i].getId() << " | "
+             << players[i].getName() << " | "
+             << players[i].getScore() << " | "
+             << players[i].getTimestamp()
+             << "]" << endl;
+    }
+
 }

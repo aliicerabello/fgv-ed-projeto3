@@ -24,6 +24,7 @@ public:
     void sortByScoreMerge();
 
     Player* formGroup(int groupSize, int delta, int* n);
+    void printGroup(Player* group, int n);
 
     Player* getWaitingPlayers(int* n);
 
