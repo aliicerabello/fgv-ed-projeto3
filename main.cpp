@@ -82,5 +82,25 @@ int main() {
     cout << "Estado final:" << endl;
     matchmaking.printWaitingPlayers();
 
+    cout << endl;
+
+    cout << "=== Teste 7: insertion sort ===" << endl;
+
+
+    matchmaking.insert(Player(1, "Ana", 1000, 8));
+    matchmaking.insert(Player(2, "Bruno", 900, 2));
+    matchmaking.insert(Player(3, "Carla", 1000, 1));
+    matchmaking.insert(Player(4, "Diego", 900, 4));
+    matchmaking.insert(Player(5, "Eduarda", 1100, 3));
+
+    cout << "Antes da ordenacao:" << endl;
+    matchmaking.printWaitingPlayers();
+
+    matchmaking.sortByScoreInsertion();
+
+    cout << endl;
+    cout << "Depois da ordenacao por insertion sort:" << endl;
+    matchmaking.printWaitingPlayers();
+
     return 0;
 }

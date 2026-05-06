@@ -38,9 +38,38 @@ bool Matchmaking::removePlayer(int id_){
     size--; return true;
 }
 
-void Matchmaking::sortByScoreInsertion(){
+bool Matchmaking::shouldComeFirst(Player p1, Player p2){
+    if (p1.getScore() > p2.getScore()){
+        return false;
+    }
 
+    if (p1.getScore() < p2.getScore()){
+        return true;
+    }
+
+    if (p1.getTimestamp() < p2.getTimestamp()){
+        return true;
+    }
+
+    return false;
 }
+
+
+void Matchmaking::sortByScoreInsertion(){
+    for (int i = 1; i < size; i++){
+        Player key = players[i];
+        int j = i - 1;
+
+
+        while (j >= 0 && shouldComeFirst(key, players[j])){
+            players[j + 1] = players[j];
+            j--;
+        }
+
+        players[j + 1] = key;
+
+        }
+    }
 
 void Matchmaking::sortByScoreMerge(){
     
@@ -86,12 +115,13 @@ Player* Matchmaking::formGroup(int groupSize, int delta, int* n){
 }
 
 void Matchmaking::printGroup(Player* group, int n) {
-    if (group == nullptr) {
+    if (group == nullptr || n == 0) {
         cout << "Group: nullptr" << endl;
         return;
     }
 
     cout << "Group:" << endl;
+
     for (int i = 0; i < n; i++) {
         cout << "["
              << group[i].getId() << " | "

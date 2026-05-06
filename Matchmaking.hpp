@@ -21,6 +21,8 @@ public:
     bool removePlayer(int id);
 
     void sortByScoreInsertion();
+    bool shouldComeFirst(Player p1, Player p2);
+    
     void sortByScoreMerge();
 
     Player* formGroup(int groupSize, int delta, int* n);
