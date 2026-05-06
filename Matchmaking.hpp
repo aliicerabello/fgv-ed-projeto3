@@ -1,5 +1,5 @@
-#ifndef MATCHMAKING.HPP
-#define MATCHMAKING.HPP
+#ifndef MATCHMAKING_HPP
+#define MATCHMAKING_HPP
 
 #include "Player.hpp"
 
@@ -17,7 +17,7 @@ public:
     Matchmaking();
     ~Matchmaking();
 
-    bool insert(Player player);
+    bool insert(Player player);    
     bool removePlayer(int id);
 
     void sortByScoreInsertion();

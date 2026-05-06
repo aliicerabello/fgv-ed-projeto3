@@ -5,9 +5,7 @@
 using namespace std;
 
 Matchmaking::Matchmaking(){
-    int size = 0;
-    /* dúvida: inicializar uma nova lista
-    para ser ordenada aqui?*/
+    size = 0;
 }
 
 Matchmaking::~Matchmaking(){
@@ -17,8 +15,8 @@ bool Matchmaking::insert(Player player_){
     if(size == MAX_PLAYERS)
         return false;
 
-    players[size] = player_; size++; 
-    return true;
+    players[size] = player_; 
+    size++; return true;
 }
 
 bool Matchmaking::removePlayer(int id_){
@@ -31,17 +29,13 @@ bool Matchmaking::removePlayer(int id_){
         }
     }
 
-    if (id_remove == -1){
+    if(id_remove == -1)
         return false;
-    }
-
-    for (int j = id_remove; j < size - 1; j++){
-        players[j] = players[j+1];
-    }
     
-    size--;
-    return false;  
-
+    for(int j = id_remove; j < size-1; j++) 
+        players[j] = players[j+1];
+    
+    size--; return true;
 }
 
 void Matchmaking::sortByScoreInsertion(){
@@ -49,10 +43,10 @@ void Matchmaking::sortByScoreInsertion(){
 }
 
 void Matchmaking::sortByScoreMerge(){
-
+    
 }
 
-Player* Matchmaking::formGroup(int groupSize, int delta, int* n){
+/*Player* Matchmaking::formGroup(int groupSize, int delta, int* n){
     // n indica se o grupo tem 0 ou groupsize players
     int index = -1;
     for (int i = 0; i < *n; i ++){
@@ -61,12 +55,9 @@ Player* Matchmaking::formGroup(int groupSize, int delta, int* n){
             break;
         }
 
-    if (index == -1){
+        if (index == -1){
         *n = 0;
         return nullptr;
+        }
     }
-
-    
-    
-    }
-}
+}*/

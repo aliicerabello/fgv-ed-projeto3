@@ -6,7 +6,7 @@ Player::Player(){
 }
 
 Player::Player(int id_, std::string name_, int score_, int timestamp_){
-    this->id - id_;
+    this->id = id_;
     this->name = name_;
     this->score = score_;
     this->timestamp = timestamp_;
