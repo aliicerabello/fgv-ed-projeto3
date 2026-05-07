@@ -39,30 +39,28 @@ bool Matchmaking::removePlayer(int id_){
 }
 
 bool Matchmaking::comesBefore(Player p1, Player p2){
-    if (p1.getScore() > p2.getScore())
+    if(p1.getScore() > p2.getScore())
         return false;
 
-    if (p1.getScore() < p2.getScore())
+    if(p1.getScore() < p2.getScore())
         return true;
 
-    if (p1.getTimestamp() < p2.getTimestamp())
+    if(p1.getTimestamp() < p2.getTimestamp())
         return true;
 
     return false;
 }
 
 void Matchmaking::sortByScoreInsertion(){
-    for (int i = 1; i < size; i++){
+    for(int i = 1; i < size; i++){
         Player key = players[i];
-        int j = i - 1;
-
+        int j = i-1;
 
         while (j >= 0 && comesBefore(key, players[j])){
-            players[j + 1] = players[j];
+            players[j+1] = players[j];
             j--;
         }
-
-        players[j + 1] = key;
+        players[j+1] = key;
     }
 }
 
@@ -71,7 +69,7 @@ void Matchmaking::mergeSort(Player players_[MAX_PLAYERS], int first, int middle,
     int k = first;
     int j = middle +1;
     
-    Player* aux_players = new Player[MAX_PLAYERS];
+    Player* aux_players = new Player[MAX_PLAYERS]; // players copy
     
     while(i <= middle && j <= last){
         if(comesBefore(players_[i], players_[j])){
@@ -106,9 +104,9 @@ void Matchmaking::divideMerge(Player players_[MAX_PLAYERS], int first, int last)
         return;
         
     int middle = (first + last)/2;
+    
     divideMerge(players_, first, middle);
     divideMerge(players_, middle+1, last);
-
     mergeSort(players_, first, middle, last);
 }
 
@@ -120,46 +118,48 @@ void Matchmaking::sortByScoreMerge(){
 }
 
 Player* Matchmaking::formGroup(int groupSize, int delta, int* n){
-    if (groupSize <= 0 || groupSize > size) {
-    *n = 0;
-    return nullptr;
+    if(groupSize <= 0 || groupSize > size){
+        *n = 0;
+        return nullptr;
     }
 
     int index = -1;
 
-    for (int i = 0; i <= size - groupSize; i ++){
-        if (players[i + groupSize - 1].getScore() - players[i].getScore() <= delta){
+    for (int i = 0; i <= (size-groupSize); i++){
+        // declarei para legibilidade
+        int epsilon = players[i+groupSize-1].getScore() - players[i].getScore(); 
+        
+        if (epsilon <= delta){
             index = i;
             break;
         }
     }
 
     if (index == -1){
-            *n = 0;
-            return nullptr;
-        }
+        *n = 0;
+        return nullptr;
+    }
 
     Player* group = new Player[groupSize];
     *n = groupSize;
         
     //copiar o grupo válido
-    for (int j = 0; j < groupSize; j++){
+    for (int j = 0; j < groupSize; j++)
         group[j] = players[index + j];
-    }
 
     //retirar o grupo de players
     int k = 0;
-    while (index + groupSize + k < size){
+    while(index + groupSize + k < size){
         players[index + k] = players[index + groupSize+ k];
         k++;
     }
+    
     size -= groupSize;
     return group;
-
 }
 
 void Matchmaking::printGroup(Player* group, int n) {
-    if (group == nullptr || n == 0) {
+    if(group == nullptr || n == 0){
         cout << "Group: nullptr" << endl;
         return;
     }
@@ -176,33 +176,30 @@ void Matchmaking::printGroup(Player* group, int n) {
     }
 }
 
-
 Player* Matchmaking::getWaitingPlayers(int* n){
-    if (size == 0){
+    if(size == 0){
         *n = 0;
         return nullptr;
     }
 
     Player* waiting = new Player[size];
 
-    for (int i = 0; i < size; i++){
+    for(int i = 0; i < size; i++)
         waiting[i] = players[i];
-    }
-
+    
     *n = size;
     return waiting;
 } //lembrar de fazer o delete na main!!!
 
-
 void Matchmaking::printWaitingPlayers(){
     cout << "Waiting Players:" << endl;
 
-    if (size == 0){
+    if(size == 0){
         cout << "(empty)" << endl;
         return;
     }
 
-    for (int i = 0; i < size; i++){
+    for(int i = 0; i < size; i++){
         cout << "["
              << players[i].getId() << " | "
              << players[i].getName() << " | "
