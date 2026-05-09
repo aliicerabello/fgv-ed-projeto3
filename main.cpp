@@ -295,18 +295,7 @@ void runMergeSortTests() {
     runMergeSortEmptyTest();
 }
 
-void generatePerformancePlayers(Player* players, int playerCount) {
-    for (int playerIndex = 0; playerIndex < playerCount; playerIndex++) {
-        const int id = playerIndex + 1;
-        const std::string name = "Player" + std::to_string(id);
-        const int score = (playerIndex * 37 + 13) % 100000;
-        const int timestamp = playerIndex + 1;
-
-        players[playerIndex] = Player(id, name, score, timestamp);
-    }
-}
-
-void generateStressPlayers(Player* players, int playerCount) {
+void generateRandomPlayers(Player* players, int playerCount) {
     for (int playerIndex = 0; playerIndex < playerCount; playerIndex++) {
         const int id = playerIndex + 1;
         const std::string name = "Player" + std::to_string(id);
@@ -328,45 +317,64 @@ void runPerformanceTests() {
 
     const int testSizes[] = {100, 500, 1000, 2000, 5000};
     const int testCount = 5;
+    const int repetitions = 30;
 
     for (int testIndex = 0; testIndex < testCount; testIndex++) {
         const int playerCount = testSizes[testIndex];
-        Player* basePlayers = new Player[playerCount];
 
-        generatePerformancePlayers(basePlayers, playerCount);
+        long long totalInsertionTime = 0;
+        long long totalMergeTime = 0;
 
-        Matchmaking* matchmakingInsertion = new Matchmaking();
-        Matchmaking* matchmakingMerge = new Matchmaking();
+        for (int repetition = 0; repetition < repetitions; repetition++) {
+            Player* basePlayers = new Player[playerCount];
 
-        fillMatchmaking(*matchmakingInsertion, basePlayers, playerCount);
-        fillMatchmaking(*matchmakingMerge, basePlayers, playerCount);
+            generateRandomPlayers(basePlayers, playerCount);
 
-        const auto startInsertion = std::chrono::high_resolution_clock::now();
-        matchmakingInsertion->sortByScoreInsertion();
-        const auto endInsertion = std::chrono::high_resolution_clock::now();
+            Matchmaking* matchmakingInsertion = new Matchmaking();
+            Matchmaking* matchmakingMerge = new Matchmaking();
 
-        const auto insertionTime =
-            std::chrono::duration_cast<std::chrono::microseconds>(
-                endInsertion - startInsertion
-            ).count();
+            fillMatchmaking(*matchmakingInsertion, basePlayers, playerCount);
+            fillMatchmaking(*matchmakingMerge, basePlayers, playerCount);
 
-        const auto startMerge = std::chrono::high_resolution_clock::now();
-        matchmakingMerge->sortByScoreMerge();
-        const auto endMerge = std::chrono::high_resolution_clock::now();
+            const auto startInsertion = std::chrono::high_resolution_clock::now();
+            matchmakingInsertion->sortByScoreInsertion();
+            const auto endInsertion = std::chrono::high_resolution_clock::now();
 
-        const auto mergeTime =
-            std::chrono::duration_cast<std::chrono::microseconds>(
-                endMerge - startMerge
-            ).count();
+            const auto insertionTime =
+                std::chrono::duration_cast<std::chrono::microseconds>(
+                    endInsertion - startInsertion
+                ).count();
+
+            const auto startMerge = std::chrono::high_resolution_clock::now();
+            matchmakingMerge->sortByScoreMerge();
+            const auto endMerge = std::chrono::high_resolution_clock::now();
+
+            const auto mergeTime =
+                std::chrono::duration_cast<std::chrono::microseconds>(
+                    endMerge - startMerge
+                ).count();
+
+            totalInsertionTime += insertionTime;
+            totalMergeTime += mergeTime;
+
+            delete matchmakingInsertion;
+            delete matchmakingMerge;
+            delete[] basePlayers;
+        }
+
+        const double averageInsertionTime =
+            static_cast<double>(totalInsertionTime) / repetitions;
+
+        const double averageMergeTime =
+            static_cast<double>(totalMergeTime) / repetitions;
 
         std::cout << "n = " << playerCount << std::endl;
-        std::cout << "Insertion sort: " << insertionTime << " microseconds" << std::endl;
-        std::cout << "Merge sort:     " << mergeTime << " microseconds" << std::endl;
+        std::cout << "Insertion sort medio: " << averageInsertionTime
+                  << " microseconds" << std::endl;
+        std::cout << "Merge sort medio:     " << averageMergeTime
+                  << " microseconds" << std::endl;
+        std::cout << "Repeticoes: " << repetitions << std::endl;
         std::cout << std::endl;
-
-        delete matchmakingInsertion;
-        delete matchmakingMerge;
-        delete[] basePlayers;
     }
 }
 
@@ -383,7 +391,7 @@ void runStressTests() {
         std::cout << "Teste com n = " << playerCount << " jogadores" << std::endl;
 
         Player* basePlayers = new Player[playerCount];
-        generateStressPlayers(basePlayers, playerCount);
+        generateRandomPlayers(basePlayers, playerCount);
 
         Matchmaking* matchmakingInsertion = new Matchmaking();
         Matchmaking* matchmakingMerge = new Matchmaking();
@@ -424,6 +432,5 @@ int main() {
     runMergeSortTests();
     runPerformanceTests();
     runStressTests();
-
     return 0;
 }
