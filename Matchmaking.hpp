@@ -10,7 +10,7 @@ class Matchmaking {
 private:
 
     Player players[MAX_PLAYERS];
-    int size;
+    int size; //size é a qtt de players no momento atual
 
 public:
 
@@ -33,6 +33,8 @@ public:
     Player* getWaitingPlayers(int* n);
 
     void printWaitingPlayers();
+
+    // Outros métodos auxiliares, se necessário
 };
 
 #endif
