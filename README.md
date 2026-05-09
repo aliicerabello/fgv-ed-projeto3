@@ -305,7 +305,7 @@ O arquivo `main.cpp` contém cenários de teste para:
 ## Compilação
 
 ```bash
-g++ -Wall -Wextra -Werror -Wshadow -Wpedantic -Wconversion -std=c++17 \
+g++ -Wall -Wextra -Werror -Wshadow -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -std=c++17 \
 main.cpp Player.cpp Matchmaking.cpp -o matchmaking
 ```
 

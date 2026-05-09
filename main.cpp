@@ -1,357 +1,429 @@
 #include "Matchmaking.hpp"
 #include "Player.hpp"
-#include <iostream>
+
 #include <chrono>
-#include <string> 
+#include <iostream>
+#include <string>
 
-using namespace std;
+void printTitle(const std::string& title) {
+    std::cout << std::endl;
+    std::cout << "=== " << title << " ===" << std::endl;
+}
 
-int main() {
-    Matchmaking matchmaking;
+void printSeparator() {
+    std::cout << std::endl;
+    std::cout << "----------------------------------------" << std::endl;
+}
 
-    cout << "=== Teste 1: insercao ===" << endl;
+void printPlayersArray(Player* players, int playerCount) {
+    for (int playerIndex = 0; playerIndex < playerCount; playerIndex++) {
+        std::cout << "["
+                  << players[playerIndex].getId() << " | "
+                  << players[playerIndex].getName() << " | "
+                  << players[playerIndex].getScore() << " | "
+                  << players[playerIndex].getTimestamp()
+                  << "]" << std::endl;
+    }
+}
+
+void insertBasicPlayers(Matchmaking& matchmaking) {
     matchmaking.insert(Player(1, "Ana", 1000, 1));
     matchmaking.insert(Player(2, "Bruno", 1010, 2));
     matchmaking.insert(Player(3, "Carla", 1020, 3));
     matchmaking.insert(Player(4, "Diego", 1100, 4));
+}
+
+void insertSortSamplePlayers(Matchmaking& matchmaking) {
+    matchmaking.insert(Player(1, "Ana", 1000, 8));
+    matchmaking.insert(Player(2, "Bruno", 900, 2));
+    matchmaking.insert(Player(3, "Carla", 1000, 1));
+    matchmaking.insert(Player(4, "Diego", 900, 4));
+    matchmaking.insert(Player(5, "Eduarda", 1100, 3));
+}
+
+void runBasicTests() {
+    Matchmaking matchmaking;
+
+    printTitle("Teste 1: insercao");
+    insertBasicPlayers(matchmaking);
     matchmaking.printWaitingPlayers();
 
-    cout << endl;
+    printTitle("Teste 2: getWaitingPlayers");
+    int waitingCount = 0;
+    Player* waitingPlayers = matchmaking.getWaitingPlayers(&waitingCount);
 
-    cout << "=== Teste 2: getWaitingPlayers ===" << endl;
-    int n1;
-    Player* waiting = matchmaking.getWaitingPlayers(&n1);
+    std::cout << "n = " << waitingCount << std::endl;
+    printPlayersArray(waitingPlayers, waitingCount);
 
-    cout << "n = " << n1 << endl;
-    for (int i = 0; i < n1; i++) {
-        cout << "["
-             << waiting[i].getId() << " | "
-             << waiting[i].getName() << " | "
-             << waiting[i].getScore() << " | "
-             << waiting[i].getTimestamp()
-             << "]" << endl;
-    }
+    delete[] waitingPlayers;
 
-    delete[] waiting;
+    printTitle("Teste 3: formGroup com sucesso");
+    int groupCount = 0;
+    Player* group = matchmaking.formGroup(3, 30, &groupCount);
 
-    cout << endl;
-
-    cout << "=== Teste 3: formGroup com sucesso ===" << endl;
-    Player* group = matchmaking.formGroup(3, 30, &n1);
-
-    matchmaking.printGroup(group, n1);
-    cout << "n = " << n1 << endl;
+    matchmaking.printGroup(group, groupCount);
+    std::cout << "n = " << groupCount << std::endl;
 
     delete[] group;
 
-    cout << endl;
-
-    cout << "Estado apos formar grupo:" << endl;
+    std::cout << std::endl;
+    std::cout << "Estado apos formar grupo:" << std::endl;
     matchmaking.printWaitingPlayers();
 
-    cout << endl;
-
-    cout << "=== Teste 4: removePlayer ===" << endl;
+    printTitle("Teste 4: removePlayer");
     bool removed = matchmaking.removePlayer(4);
-    cout << "removePlayer(4): " << removed << endl;
+    std::cout << "removePlayer(4): " << removed << std::endl;
     matchmaking.printWaitingPlayers();
 
-    cout << endl;
-
-    cout << "=== Teste 5: tentativa de remover ID inexistente ===" << endl;
+    printTitle("Teste 5: tentativa de remover ID inexistente");
     removed = matchmaking.removePlayer(99);
-    cout << "removePlayer(99): " << removed << endl;
+    std::cout << "removePlayer(99): " << removed << std::endl;
     matchmaking.printWaitingPlayers();
 
-    cout << endl;
-
-    cout << "=== Teste 6: formGroup sem sucesso ===" << endl;
+    printTitle("Teste 6: formGroup sem sucesso");
     matchmaking.insert(Player(5, "Eduarda", 1000, 5));
     matchmaking.insert(Player(6, "Felipe", 1200, 6));
     matchmaking.insert(Player(7, "Giulia", 1400, 7));
 
     matchmaking.printWaitingPlayers();
 
-    group = matchmaking.formGroup(3, 50, &n1);
+    group = matchmaking.formGroup(3, 50, &groupCount);
 
-    matchmaking.printGroup(group, n1);
-    cout << "n = " << n1 << endl;
+    matchmaking.printGroup(group, groupCount);
+    std::cout << "n = " << groupCount << std::endl;
 
     delete[] group;
 
-    cout << endl;
-
-    cout << "Estado final:" << endl;
+    std::cout << std::endl;
+    std::cout << "Estado final:" << std::endl;
     matchmaking.printWaitingPlayers();
+}
 
-    cout << endl;
+void runInsertionSortTest() {
+    printTitle("Teste 7: insertion sort");
 
-    cout << "=== Teste 7: insertion sort ===" << endl;
+    Matchmaking matchmakingInsertion;
+    insertSortSamplePlayers(matchmakingInsertion);
 
-    matchmaking.insert(Player(1, "Ana", 1000, 8));
-    matchmaking.insert(Player(2, "Bruno", 900, 2));
-    matchmaking.insert(Player(3, "Carla", 1000, 1));
-    matchmaking.insert(Player(4, "Diego", 900, 4));
-    matchmaking.insert(Player(5, "Eduarda", 1100, 3));
+    std::cout << "Antes da ordenacao:" << std::endl;
+    matchmakingInsertion.printWaitingPlayers();
 
-    cout << "Antes da ordenacao:" << endl;
-    matchmaking.printWaitingPlayers();
+    matchmakingInsertion.sortByScoreInsertion();
 
-    matchmaking.sortByScoreInsertion();
+    std::cout << std::endl;
+    std::cout << "Depois da ordenacao por insertion sort:" << std::endl;
+    matchmakingInsertion.printWaitingPlayers();
+}
 
-    cout << endl;
-    cout << "Depois da ordenacao por insertion sort:" << endl;
-    matchmaking.printWaitingPlayers();
+void runMergeSortDefaultTest() {
+    printTitle("Teste 8: merge sort");
 
-    cout << "=== Teste 8: merge sort ===" << endl;
+    Matchmaking matchmakingMerge;
+    insertSortSamplePlayers(matchmakingMerge);
 
-    Matchmaking* matchmakingMerge1 = new Matchmaking();
+    std::cout << "Antes da ordenacao:" << std::endl;
+    matchmakingMerge.printWaitingPlayers();
 
-    matchmakingMerge1->insert(Player(1, "Ana", 1000, 8));
-    matchmakingMerge1->insert(Player(2, "Bruno", 900, 2));
-    matchmakingMerge1->insert(Player(3, "Carla", 1000, 1));
-    matchmakingMerge1->insert(Player(4, "Diego", 900, 4));
-    matchmakingMerge1->insert(Player(5, "Eduarda", 1100, 3));
+    matchmakingMerge.sortByScoreMerge();
 
-    cout << "Antes da ordenacao:" << endl;
-    matchmakingMerge1->printWaitingPlayers();
+    std::cout << std::endl;
+    std::cout << "Depois da ordenacao por merge sort:" << std::endl;
+    matchmakingMerge.printWaitingPlayers();
+}
 
-    matchmakingMerge1->sortByScoreMerge();
+void runMergeSortEqualScoresTest() {
+    printTitle("Teste 9: merge sort com scores iguais");
 
-    cout << endl;
-    cout << "Depois da ordenacao por merge sort:" << endl;
-    matchmakingMerge1->printWaitingPlayers();
+    Matchmaking matchmakingEqualScores;
 
-    delete matchmakingMerge1;
+    matchmakingEqualScores.insert(Player(10, "Lucas", 1000, 5));
+    matchmakingEqualScores.insert(Player(11, "Marina", 1000, 2));
+    matchmakingEqualScores.insert(Player(12, "Nina", 1000, 8));
+    matchmakingEqualScores.insert(Player(13, "Otavio", 1000, 1));
 
-    cout << endl;
+    std::cout << "Antes da ordenacao:" << std::endl;
+    matchmakingEqualScores.printWaitingPlayers();
 
-    cout << "=== Teste 9: merge sort com scores iguais ===" << endl;
+    matchmakingEqualScores.sortByScoreMerge();
 
-    Matchmaking* matchmakingEqualScores = new Matchmaking();
+    std::cout << std::endl;
+    std::cout << "Depois da ordenacao por merge sort:" << std::endl;
+    matchmakingEqualScores.printWaitingPlayers();
+}
 
-    matchmakingEqualScores->insert(Player(10, "Lucas", 1000, 5));
-    matchmakingEqualScores->insert(Player(11, "Marina", 1000, 2));
-    matchmakingEqualScores->insert(Player(12, "Nina", 1000, 8));
-    matchmakingEqualScores->insert(Player(13, "Otavio", 1000, 1));
+void runMergeSortAlreadySortedTest() {
+    printTitle("Teste 10: merge sort ja ordenado");
 
-    cout << "Antes da ordenacao:" << endl;
-    matchmakingEqualScores->printWaitingPlayers();
+    Matchmaking matchmakingAlreadySorted;
 
-    matchmakingEqualScores->sortByScoreMerge();
+    matchmakingAlreadySorted.insert(Player(20, "A", 800, 1));
+    matchmakingAlreadySorted.insert(Player(21, "B", 900, 2));
+    matchmakingAlreadySorted.insert(Player(22, "C", 1000, 3));
+    matchmakingAlreadySorted.insert(Player(23, "D", 1100, 4));
 
-    cout << endl;
-    cout << "Depois da ordenacao por merge sort:" << endl;
-    matchmakingEqualScores->printWaitingPlayers();
+    std::cout << "Antes da ordenacao:" << std::endl;
+    matchmakingAlreadySorted.printWaitingPlayers();
 
-    delete matchmakingEqualScores;
+    matchmakingAlreadySorted.sortByScoreMerge();
 
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "Depois da ordenacao por merge sort:" << std::endl;
+    matchmakingAlreadySorted.printWaitingPlayers();
+}
 
-    cout << "=== Teste 10: merge sort ja ordenado ===" << endl;
+void runMergeSortReverseTest() {
+    printTitle("Teste 11: merge sort em ordem inversa");
 
-    Matchmaking* matchmakingAlreadySorted = new Matchmaking();
+    Matchmaking matchmakingReverse;
 
-    matchmakingAlreadySorted->insert(Player(20, "A", 800, 1));
-    matchmakingAlreadySorted->insert(Player(21, "B", 900, 2));
-    matchmakingAlreadySorted->insert(Player(22, "C", 1000, 3));
-    matchmakingAlreadySorted->insert(Player(23, "D", 1100, 4));
+    matchmakingReverse.insert(Player(30, "A", 1200, 1));
+    matchmakingReverse.insert(Player(31, "B", 1100, 2));
+    matchmakingReverse.insert(Player(32, "C", 1000, 3));
+    matchmakingReverse.insert(Player(33, "D", 900, 4));
+    matchmakingReverse.insert(Player(34, "E", 800, 5));
 
-    cout << "Antes da ordenacao:" << endl;
-    matchmakingAlreadySorted->printWaitingPlayers();
+    std::cout << "Antes da ordenacao:" << std::endl;
+    matchmakingReverse.printWaitingPlayers();
 
-    matchmakingAlreadySorted->sortByScoreMerge();
+    matchmakingReverse.sortByScoreMerge();
 
-    cout << endl;
-    cout << "Depois da ordenacao por merge sort:" << endl;
-    matchmakingAlreadySorted->printWaitingPlayers();
+    std::cout << std::endl;
+    std::cout << "Depois da ordenacao por merge sort:" << std::endl;
+    matchmakingReverse.printWaitingPlayers();
+}
 
-    delete matchmakingAlreadySorted;
+void runMergeSortTimestampTest() {
+    printTitle("Teste 12: score igual com timestamps fora de ordem");
 
-    cout << endl;
+    Matchmaking matchmakingTimestamp;
 
-    cout << "=== Teste 11: merge sort em ordem inversa ===" << endl;
+    matchmakingTimestamp.insert(Player(1, "Ana", 900, 5));
+    matchmakingTimestamp.insert(Player(2, "Bruno", 900, 2));
+    matchmakingTimestamp.insert(Player(3, "Carla", 1000, 4));
+    matchmakingTimestamp.insert(Player(4, "Diego", 1000, 1));
 
-    Matchmaking* matchmakingReverse = new Matchmaking();
+    std::cout << "Antes:" << std::endl;
+    matchmakingTimestamp.printWaitingPlayers();
 
-    matchmakingReverse->insert(Player(30, "A", 1200, 1));
-    matchmakingReverse->insert(Player(31, "B", 1100, 2));
-    matchmakingReverse->insert(Player(32, "C", 1000, 3));
-    matchmakingReverse->insert(Player(33, "D", 900, 4));
-    matchmakingReverse->insert(Player(34, "E", 800, 5));
+    matchmakingTimestamp.sortByScoreMerge();
 
-    cout << "Antes da ordenacao:" << endl;
-    matchmakingReverse->printWaitingPlayers();
+    std::cout << std::endl;
+    std::cout << "Depois:" << std::endl;
+    matchmakingTimestamp.printWaitingPlayers();
+}
 
-    matchmakingReverse->sortByScoreMerge();
+void runMergeSortReverseTieTest() {
+    printTitle("Teste 13: ordem inversa com empates");
 
-    cout << endl;
-    cout << "Depois da ordenacao por merge sort:" << endl;
-    matchmakingReverse->printWaitingPlayers();
+    Matchmaking matchmakingReverseTie;
 
-    delete matchmakingReverse;
+    matchmakingReverseTie.insert(Player(1, "Ana", 1100, 3));
+    matchmakingReverseTie.insert(Player(2, "Bruno", 1000, 5));
+    matchmakingReverseTie.insert(Player(3, "Carla", 1000, 2));
+    matchmakingReverseTie.insert(Player(4, "Diego", 900, 4));
+    matchmakingReverseTie.insert(Player(5, "Eduarda", 900, 1));
 
-    cout << endl;
+    std::cout << "Antes:" << std::endl;
+    matchmakingReverseTie.printWaitingPlayers();
 
-    cout << "=== Teste 12: merge sort com apenas um jogador ===" << endl;
+    matchmakingReverseTie.sortByScoreMerge();
 
-    Matchmaking* matchmakingOne = new Matchmaking();
+    std::cout << std::endl;
+    std::cout << "Depois:" << std::endl;
+    matchmakingReverseTie.printWaitingPlayers();
+}
 
-    matchmakingOne->insert(Player(40, "Unico", 1000, 1));
+void runMergeSortSinglePlayerTest() {
+    printTitle("Teste 14: merge sort com apenas um jogador");
 
-    cout << "Antes da ordenacao:" << endl;
-    matchmakingOne->printWaitingPlayers();
+    Matchmaking matchmakingOne;
 
-    matchmakingOne->sortByScoreMerge();
+    matchmakingOne.insert(Player(40, "Unico", 1000, 1));
 
-    cout << endl;
-    cout << "Depois da ordenacao por merge sort:" << endl;
-    matchmakingOne->printWaitingPlayers();
+    std::cout << "Antes da ordenacao:" << std::endl;
+    matchmakingOne.printWaitingPlayers();
 
-    delete matchmakingOne;
+    matchmakingOne.sortByScoreMerge();
 
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "Depois da ordenacao por merge sort:" << std::endl;
+    matchmakingOne.printWaitingPlayers();
+}
 
-    cout << "=== Teste 13: merge sort sem jogadores ===" << endl;
+void runMergeSortTwoPlayersTest() {
+    printTitle("Teste 15: merge sort com dois jogadores");
 
-    Matchmaking* matchmakingEmpty = new Matchmaking();
+    Matchmaking matchmakingTwo;
 
-    cout << "Antes da ordenacao:" << endl;
-    matchmakingEmpty->printWaitingPlayers();
+    matchmakingTwo.insert(Player(1, "Ana", 1000, 2));
+    matchmakingTwo.insert(Player(2, "Bruno", 900, 1));
 
-    matchmakingEmpty->sortByScoreMerge();
+    std::cout << "Antes:" << std::endl;
+    matchmakingTwo.printWaitingPlayers();
 
-    cout << endl;
-    cout << "Depois da ordenacao por merge sort:" << endl;
-    matchmakingEmpty->printWaitingPlayers();
+    matchmakingTwo.sortByScoreMerge();
 
-    delete matchmakingEmpty;
+    std::cout << std::endl;
+    std::cout << "Depois:" << std::endl;
+    matchmakingTwo.printWaitingPlayers();
+}
 
-    cout << endl;
-    cout << "=== Testes de desempenho ===" << endl;
+void runMergeSortEmptyTest() {
+    printTitle("Teste 16: merge sort sem jogadores");
 
-    int sizes[] = {100, 500, 1000, 2000, 5000};
-    int numTests = 5;
+    Matchmaking matchmakingEmpty;
 
-    for (int t = 0; t < numTests; t++) {
-        int n2 = sizes[t];
+    std::cout << "Antes da ordenacao:" << std::endl;
+    matchmakingEmpty.printWaitingPlayers();
 
-        Player* basePlayers = new Player[n2];
+    matchmakingEmpty.sortByScoreMerge();
 
-        // Geracao deterministica dos dados
-        // Assim, insertion sort e merge sort recebem exatamente os mesmos jogadores
-        for (int i = 0; i < n2; i++) {
-            int id = i + 1;
-            string name = "Player" + to_string(id);
+    std::cout << std::endl;
+    std::cout << "Depois da ordenacao por merge sort:" << std::endl;
+    matchmakingEmpty.printWaitingPlayers();
+}
 
-            // Score pseudoaleatorio, mas deterministico
-            int score = (i * 37 + 13) % 100000;
+void runMergeSortTests() {
+    runMergeSortDefaultTest();
+    runMergeSortEqualScoresTest();
+    runMergeSortAlreadySortedTest();
+    runMergeSortReverseTest();
+    runMergeSortTimestampTest();
+    runMergeSortReverseTieTest();
+    runMergeSortSinglePlayerTest();
+    runMergeSortTwoPlayersTest();
+    runMergeSortEmptyTest();
+}
 
-            // Timestamp crescente
-            int timestamp = i + 1;
+void generatePerformancePlayers(Player* players, int playerCount) {
+    for (int playerIndex = 0; playerIndex < playerCount; playerIndex++) {
+        const int id = playerIndex + 1;
+        const std::string name = "Player" + std::to_string(id);
+        const int score = (playerIndex * 37 + 13) % 100000;
+        const int timestamp = playerIndex + 1;
 
-            basePlayers[i] = Player(id, name, score, timestamp);
-        }
+        players[playerIndex] = Player(id, name, score, timestamp);
+    }
+}
+
+void generateStressPlayers(Player* players, int playerCount) {
+    for (int playerIndex = 0; playerIndex < playerCount; playerIndex++) {
+        const int id = playerIndex + 1;
+        const std::string name = "Player" + std::to_string(id);
+        const int score = (playerIndex * 7919 + 12345) % 100000;
+        const int timestamp = (playerIndex * 3571 + 999) % 100000;
+
+        players[playerIndex] = Player(id, name, score, timestamp);
+    }
+}
+
+void fillMatchmaking(Matchmaking& matchmaking, const Player* players, int playerCount) {
+    for (int playerIndex = 0; playerIndex < playerCount; playerIndex++) {
+        matchmaking.insert(players[playerIndex]);
+    }
+}
+
+void runPerformanceTests() {
+    printTitle("Testes de desempenho");
+
+    const int testSizes[] = {100, 500, 1000, 2000, 5000};
+    const int testCount = 5;
+
+    for (int testIndex = 0; testIndex < testCount; testIndex++) {
+        const int playerCount = testSizes[testIndex];
+        Player* basePlayers = new Player[playerCount];
+
+        generatePerformancePlayers(basePlayers, playerCount);
 
         Matchmaking* matchmakingInsertion = new Matchmaking();
-        Matchmaking* matchmakingMerge2 = new Matchmaking();
+        Matchmaking* matchmakingMerge = new Matchmaking();
 
-        for (int i = 0; i < n2; i++) {
-            matchmakingInsertion->insert(basePlayers[i]);
-            matchmakingMerge2->insert(basePlayers[i]);
-        }
+        fillMatchmaking(*matchmakingInsertion, basePlayers, playerCount);
+        fillMatchmaking(*matchmakingMerge, basePlayers, playerCount);
 
-        auto startInsertion = chrono::high_resolution_clock::now();
-
+        const auto startInsertion = std::chrono::high_resolution_clock::now();
         matchmakingInsertion->sortByScoreInsertion();
+        const auto endInsertion = std::chrono::high_resolution_clock::now();
 
-        auto endInsertion = chrono::high_resolution_clock::now();
+        const auto insertionTime =
+            std::chrono::duration_cast<std::chrono::microseconds>(
+                endInsertion - startInsertion
+            ).count();
 
-        auto durationInsertion =
-            chrono::duration_cast<chrono::microseconds>(endInsertion - startInsertion).count();
+        const auto startMerge = std::chrono::high_resolution_clock::now();
+        matchmakingMerge->sortByScoreMerge();
+        const auto endMerge = std::chrono::high_resolution_clock::now();
 
-        auto startMerge = chrono::high_resolution_clock::now();
+        const auto mergeTime =
+            std::chrono::duration_cast<std::chrono::microseconds>(
+                endMerge - startMerge
+            ).count();
 
-        matchmakingMerge2->sortByScoreMerge();
-
-        auto endMerge = chrono::high_resolution_clock::now();
-
-        auto durationMerge =
-            chrono::duration_cast<chrono::microseconds>(endMerge - startMerge).count();
-
-        cout << "n = " << n2 << endl;
-        cout << "Insertion sort: " << durationInsertion << " microseconds" << endl;
-        cout << "Merge sort:     " << durationMerge << " microseconds" << endl;
-        cout << endl;
+        std::cout << "n = " << playerCount << std::endl;
+        std::cout << "Insertion sort: " << insertionTime << " microseconds" << std::endl;
+        std::cout << "Merge sort:     " << mergeTime << " microseconds" << std::endl;
+        std::cout << std::endl;
 
         delete matchmakingInsertion;
-        delete matchmakingMerge2;
+        delete matchmakingMerge;
         delete[] basePlayers;
     }
+}
 
-    cout << endl;
-    cout << "=== Stress test: insertion sort vs merge sort ===" << endl;
+void runStressTests() {
+    printTitle("Stress test: insertion sort vs merge sort");
 
-    int testSizes3[] = {1000, 5000, 10000, 20000, 50000};
-    int numTests3 = 5;
+    const int testSizes[] = {1000, 5000, 10000, 20000, 50000};
+    const int testCount = 5;
 
-    for (int testIndex3 = 0; testIndex3 < numTests3; testIndex3++) {
-        int n3 = testSizes3[testIndex3];
+    for (int testIndex = 0; testIndex < testCount; testIndex++) {
+        const int playerCount = testSizes[testIndex];
 
-        cout << endl;
-        cout << "----------------------------------------" << endl;
-        cout << "Teste com n = " << n3 << " jogadores" << endl;
+        printSeparator();
+        std::cout << "Teste com n = " << playerCount << " jogadores" << std::endl;
 
-        Player* basePlayers3 = new Player[n3];
+        Player* basePlayers = new Player[playerCount];
+        generateStressPlayers(basePlayers, playerCount);
 
-        // Geracao deterministica dos dados.
-        // Os dois algoritmos recebem exatamente os mesmos jogadores.
-        for (int playerIndex3 = 0; playerIndex3 < n3; playerIndex3++) {
-            int id3 = playerIndex3 + 1;
-            string name3 = "Player" + to_string(id3);
+        Matchmaking* matchmakingInsertion = new Matchmaking();
+        Matchmaking* matchmakingMerge = new Matchmaking();
 
-            int score3 = (playerIndex3 * 7919 + 12345) % 100000;
-            int timestamp3 = (playerIndex3 * 3571 + 999) % 100000;
+        fillMatchmaking(*matchmakingInsertion, basePlayers, playerCount);
+        fillMatchmaking(*matchmakingMerge, basePlayers, playerCount);
 
-            basePlayers3[playerIndex3] = Player(id3, name3, score3, timestamp3);
-        }
+        const auto startInsertion = std::chrono::high_resolution_clock::now();
+        matchmakingInsertion->sortByScoreInsertion();
+        const auto endInsertion = std::chrono::high_resolution_clock::now();
 
-        Matchmaking* matchmakingInsertion2 = new Matchmaking();
-        Matchmaking* matchmakingMerge3 = new Matchmaking();
-
-        for (int insertIndex3 = 0; insertIndex3 < n3; insertIndex3++) {
-            matchmakingInsertion2->insert(basePlayers3[insertIndex3]);
-            matchmakingMerge3->insert(basePlayers3[insertIndex3]);
-        }
-
-        auto startInsertion3 = chrono::high_resolution_clock::now();
-
-        matchmakingInsertion2->sortByScoreInsertion();
-
-        auto endInsertion3 = chrono::high_resolution_clock::now();
-
-        auto insertionTime3 =
-            chrono::duration_cast<chrono::milliseconds>(
-                endInsertion3 - startInsertion3
+        const auto insertionTime =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                endInsertion - startInsertion
             ).count();
 
-        auto startMerge3 = chrono::high_resolution_clock::now();
+        const auto startMerge = std::chrono::high_resolution_clock::now();
+        matchmakingMerge->sortByScoreMerge();
+        const auto endMerge = std::chrono::high_resolution_clock::now();
 
-        matchmakingMerge3->sortByScoreMerge();
-
-        auto endMerge3 = chrono::high_resolution_clock::now();
-
-        auto mergeTime3 =
-            chrono::duration_cast<chrono::milliseconds>(
-                endMerge3 - startMerge3
+        const auto mergeTime =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                endMerge - startMerge
             ).count();
 
-        cout << "Insertion sort: " << insertionTime3 << " ms" << endl;
-        cout << "Merge sort:     " << mergeTime3 << " ms" << endl;
+        std::cout << "Insertion sort: " << insertionTime << " ms" << std::endl;
+        std::cout << "Merge sort:     " << mergeTime << " ms" << std::endl;
 
-        delete matchmakingInsertion2;
-        delete matchmakingMerge3;
-        delete[] basePlayers3;
+        delete matchmakingInsertion;
+        delete matchmakingMerge;
+        delete[] basePlayers;
     }
+}
+
+int main() {
+    runBasicTests();
+    runInsertionSortTest();
+    runMergeSortTests();
+    runPerformanceTests();
+    runStressTests();
+
     return 0;
 }
