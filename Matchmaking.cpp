@@ -68,10 +68,11 @@ void Matchmaking::sortByScoreInsertion(){
 
 void Matchmaking::mergeSort(Player players_[MAX_PLAYERS], int first, int middle, int last){
     int i = first;
-    int k = first;
+    int k = 0;
     int j = middle +1;
     
-    Player* aux_players = new Player[MAX_PLAYERS];
+    int auxSize = last-first+1;
+    Player* aux_players = new Player[auxSize];
     
     while(i <= middle && j <= last){
         if(comesBefore(players_[i], players_[j])){
@@ -95,8 +96,8 @@ void Matchmaking::mergeSort(Player players_[MAX_PLAYERS], int first, int middle,
         j++; k++;
     }
 
-    for(int n = first; n <= last; n++)
-        players_[n] = aux_players[n];
+    for(int n = 0; n < auxSize; n++)
+        players_[first + n] = aux_players[n];
 
     delete[] aux_players;
 }
