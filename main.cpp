@@ -1,6 +1,5 @@
 #include "Matchmaking.hpp"
 #include "Player.hpp"
-
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -136,10 +135,10 @@ void runMergeSortEqualScoresTest() {
 
     Matchmaking matchmakingEqualScores;
 
-    matchmakingEqualScores.insert(Player(10, "Lucas", 1000, 5));
-    matchmakingEqualScores.insert(Player(11, "Marina", 1000, 2));
-    matchmakingEqualScores.insert(Player(12, "Nina", 1000, 8));
-    matchmakingEqualScores.insert(Player(13, "Otavio", 1000, 1));
+    matchmakingEqualScores.insert(Player(10, "Ana", 1000, 5));
+    matchmakingEqualScores.insert(Player(11, "Bruno", 1000, 2));
+    matchmakingEqualScores.insert(Player(12, "Carla", 1000, 8));
+    matchmakingEqualScores.insert(Player(13, "Diego", 1000, 1));
 
     std::cout << "Antes da ordenacao:" << std::endl;
     matchmakingEqualScores.printWaitingPlayers();
@@ -156,10 +155,10 @@ void runMergeSortAlreadySortedTest() {
 
     Matchmaking matchmakingAlreadySorted;
 
-    matchmakingAlreadySorted.insert(Player(20, "A", 800, 1));
-    matchmakingAlreadySorted.insert(Player(21, "B", 900, 2));
-    matchmakingAlreadySorted.insert(Player(22, "C", 1000, 3));
-    matchmakingAlreadySorted.insert(Player(23, "D", 1100, 4));
+    matchmakingAlreadySorted.insert(Player(20, "Ana", 800, 1));
+    matchmakingAlreadySorted.insert(Player(21, "Bruno", 900, 2));
+    matchmakingAlreadySorted.insert(Player(22, "Carla", 1000, 3));
+    matchmakingAlreadySorted.insert(Player(23, "Diego", 1100, 4));
 
     std::cout << "Antes da ordenacao:" << std::endl;
     matchmakingAlreadySorted.printWaitingPlayers();
@@ -176,11 +175,11 @@ void runMergeSortReverseTest() {
 
     Matchmaking matchmakingReverse;
 
-    matchmakingReverse.insert(Player(30, "A", 1200, 1));
-    matchmakingReverse.insert(Player(31, "B", 1100, 2));
-    matchmakingReverse.insert(Player(32, "C", 1000, 3));
-    matchmakingReverse.insert(Player(33, "D", 900, 4));
-    matchmakingReverse.insert(Player(34, "E", 800, 5));
+    matchmakingReverse.insert(Player(30, "Ana", 1200, 1));
+    matchmakingReverse.insert(Player(31, "Bruno", 1100, 2));
+    matchmakingReverse.insert(Player(32, "Carla", 1000, 3));
+    matchmakingReverse.insert(Player(33, "Diego", 900, 4));
+    matchmakingReverse.insert(Player(34, "Eduarda", 800, 5));
 
     std::cout << "Antes da ordenacao:" << std::endl;
     matchmakingReverse.printWaitingPlayers();
@@ -307,9 +306,8 @@ void generateRandomPlayers(Player* players, int playerCount) {
 }
 
 void fillMatchmaking(Matchmaking& matchmaking, const Player* players, int playerCount) {
-    for (int playerIndex = 0; playerIndex < playerCount; playerIndex++) {
+    for (int playerIndex = 0; playerIndex < playerCount; playerIndex++)
         matchmaking.insert(players[playerIndex]);
-    }
 }
 
 void runPerformanceTests() {
